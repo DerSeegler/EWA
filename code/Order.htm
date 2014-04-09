@@ -7,36 +7,38 @@
 		</title>
 	</head>
 	<body>
-		<h1>Bestellung</h1>
-		<p>
-			<img src="images/pizza.png" alt="Bild einer Pizza" />
-			Margherita 4,00&euro;
-		</p>
-		<p>
-			<img src="images/pizza.png" alt="Bild einer Pizza" />
-			Salami 4,50&euro;
-		</p>
-		<p>
-			<img src="images/pizza.png" alt="Bild einer Pizza" />
-			Hawaii 5,50&euro;
-		</p>
-		<form id="orderForm">
+		<section>
+			<h1>Bestellung</h1>
 			<p>
-				<select name="cart" multiple size="6">
-					<option>test</option>
-				</select>
+				<img src="images/pizza.png" alt="Bild einer Pizza" />
+				Margherita 4,00&euro;
 			</p>
 			<p>
-				15,70&euro;
+				<img src="images/pizza.png" alt="Bild einer Pizza" />
+				Salami 4,50&euro;
 			</p>
 			<p>
-				<input name="adress" type="text" size="20">
+				<img src="images/pizza.png" alt="Bild einer Pizza" />
+				Hawaii 5,50&euro;
 			</p>
-			<p>
-				<input type="button" name="deleteAll" value="Alles löschen" /> 
-				<input type="button" name="deleteSelected" value="Auswahl löschen" /> 
-				<input type="button" name="order" value="Bestellen" onclick="document.forms['orderForm'].submit();" /> 
-			</p>
-		</form>
+			<form id="orderForm" action="http://www.fbi.h-da.de/cgi-bin/Echo.pl" accept-charset="UTF-8" method="get">
+				<p>
+					<select name="cart" multiple size="6">
+						<option>test</option>
+					</select>
+				</p>
+				<p>
+					15,70&euro;
+				</p>
+				<p>
+					<input name="adress" type="text" size="20">
+				</p>
+				<p>
+					<input type="button" name="deleteAll" value="Alles löschen" /> 
+					<input type="button" name="deleteSelected" value="Auswahl löschen" /> 
+					<input type="submit" name="order" value="Bestellen" /> 
+				</p>
+			</form>
+		</section>
 	</body>
 </html>

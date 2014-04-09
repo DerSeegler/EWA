@@ -7,33 +7,37 @@
 		</title>
 	</head>
 	<body>
-		<h1>B&auml;cker</h1>
-		<table>
-			<tr>
-				<th></th>
-				<th>bestellt</th>
-				<th>im Ofen</th>
-				<th>Fertig</th>
-			</tr>
+		<section>
+			<h1>B&auml;cker</h1>
+			<form id="bakerForm" action="http://www.fbi.h-da.de/cgi-bin/Echo.pl" accept-charset="UTF-8" method="get">
+				<table>
+					<tr>
+						<th></th>
+						<th>bestellt</th>
+						<th>im Ofen</th>
+						<th>Fertig</th>
+					</tr>
 
-			<tr>
-				<td>Margherita</td>
-				<td><input type="radio" name="1" value="bestellt"></td>
-				<td><input type="radio" name="1" value="im Ofen"></td>
-				<td><input type="radio" name="1" value="Fertig"></td>
-			</tr>
-			<tr>
-				<td>Margherita </td>
-				<td><input type="radio" name="2" value="bestellt"></td>
-				<td><input type="radio" name="2" value="im Ofen"></td>
-				<td><input type="radio" name="2" value="Fertig"></td>
-			</tr>
-			<tr>
-				<td>Hawai</td>
-				<td><input type="radio" name="3" value="bestellt"></td>
-				<td><input type="radio" name="3" value="im Ofen"></td>
-				<td><input type="radio" name="3" value="Fertig"></td>
-			</tr>
-		</table>
+					<tr>
+						<td>Margherita</td>
+						<td><input type="radio" name="1" value="bestellt" onclick="document.forms['bakerForm'].submit();" checked></td>
+						<td><input type="radio" name="1" value="im Ofen" onclick="document.forms['bakerForm'].submit();"></td>
+						<td><input type="radio" name="1" value="Fertig" onclick="document.forms['bakerForm'].submit();"></td>
+					</tr>
+					<tr>
+						<td>Margherita </td>
+						<td><input type="radio" name="2" value="bestellt" onclick="document.forms['bakerForm'].submit();"></td>
+						<td><input type="radio" name="2" value="im Ofen" onclick="document.forms['bakerForm'].submit();" checked></td>
+						<td><input type="radio" name="2" value="Fertig" onclick="document.forms['bakerForm'].submit();"></td>
+					</tr>
+					<tr>
+						<td>Hawai</td>
+						<td><input type="radio" name="3" value="bestellt" onclick="document.forms['bakerForm'].submit();"></td>
+						<td><input type="radio" name="3" value="im Ofen" onclick="document.forms['bakerForm'].submit();" checked></td>
+						<td><input type="radio" name="3" value="Fertig" onclick="document.forms['bakerForm'].submit();"></td>
+					</tr>
+				</table>
+			</form>
+		</section>
 	</body>
 </html>
