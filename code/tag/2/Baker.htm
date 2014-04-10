@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="de">
+	<head>
+		<meta charset="UTF-8" />
+		<!-- öäß -->
+		<title>
+			Bäcker
+		</title>
+	</head>
+	<body>
+		<section>
+			<h1>Bäcker</h1>
+			<form id="bakerForm" action="http://www.fbi.h-da.de/cgi-bin/Echo.pl" accept-charset="UTF-8" method="get">
+				<table>
+					<tr>
+						<th></th>
+						<th>bestellt</th>
+						<th>im Ofen</th>
+						<th>Fertig</th>
+					</tr>
+
+					<tr>
+						<td>Margherita</td>
+						<td><input type="radio" name="1" value="0" onclick="document.forms['bakerForm'].submit();" checked></td>
+						<td><input type="radio" name="1" value="1" onclick="document.forms['bakerForm'].submit();"></td>
+						<td><input type="radio" name="1" value="2" onclick="document.forms['bakerForm'].submit();"></td>
+					</tr>
+					<tr>
+						<td>Margherita </td>
+						<td><input type="radio" name="2" value="0" onclick="document.forms['bakerForm'].submit();"></td>
+						<td><input type="radio" name="2" value="1" onclick="document.forms['bakerForm'].submit();" checked></td>
+						<td><input type="radio" name="2" value="2" onclick="document.forms['bakerForm'].submit();"></td>
+					</tr>
+					<tr>
+						<td>Hawaii</td>
+						<td><input type="radio" name="3" value="0" onclick="document.forms['bakerForm'].submit();"></td>
+						<td><input type="radio" name="3" value="1" onclick="document.forms['bakerForm'].submit();" checked></td>
+						<td><input type="radio" name="3" value="2" onclick="document.forms['bakerForm'].submit();"></td>
+					</tr>
+				</table>
+			</form>
+		</section>
+	</body>
+</html>
