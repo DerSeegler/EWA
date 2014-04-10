@@ -1,7 +1,8 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="de">
 	<head>
 		<meta charset="UTF-8" />
+		<!-- öäß -->
 		<title>
 			Bestellung
 		</title>
@@ -11,24 +12,24 @@
 			<h1>Bestellung</h1>
 			<p>
 				<img src="images/pizza.png" alt="Bild einer Pizza" />
-				Margherita 4,00&euro;
+				Margherita 4,00€;
 			</p>
 			<p>
 				<img src="images/pizza.png" alt="Bild einer Pizza" />
-				Salami 4,50&euro;
+				Salami 4,50€;
 			</p>
 			<p>
 				<img src="images/pizza.png" alt="Bild einer Pizza" />
-				Hawaii 5,50&euro;
+				Hawaii 5,50€
 			</p>
 			<form id="orderForm" action="http://www.fbi.h-da.de/cgi-bin/Echo.pl" accept-charset="UTF-8" method="get">
 				<p>
-					<select name="cart" multiple size="6">
-						<option>test</option>
+					<select name="cart[]" multiple size="6">
+						<option>test</option>			
 					</select>
 				</p>
 				<p>
-					15,70&euro;
+					15,70€
 				</p>
 				<p>
 					<input name="adress" type="text" size="20">
@@ -36,7 +37,7 @@
 				<p>
 					<input type="button" name="deleteAll" value="Alles löschen" /> 
 					<input type="button" name="deleteSelected" value="Auswahl löschen" /> 
-					<input type="submit" name="order" value="Bestellen" /> 
+					<input type="submit" value="Bestellen" /> 
 				</p>
 			</form>
 		</section>
