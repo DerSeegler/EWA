@@ -9,72 +9,72 @@
 <body onLoad="init()">
 <script type="text/javascript">
   function init() {
-	document.getElementById("btnDelAll").onclick = deleteAll;
-	document.getElementById("btnDelSel").onclick = deleteSelected;
+    document.getElementById("btnDelAll").onclick = deleteAll;
+    document.getElementById("btnDelSel").onclick = deleteSelected;
   }
 
   function addItem(sender) {
-	var cart = document.getElementById("cart");
+    var cart = document.getElementById("cart");
     var cartItem = document.createElement("option");
-	cartItem.text = sender.getAttribute("data-name");
-	cartItem.value = parseFloat(sender.getAttribute("data-preis"));
-	cart.appendChild(cartItem);
-	updateSum();
+    cartItem.text = sender.getAttribute("data-name");
+    cartItem.value = parseFloat(sender.getAttribute("data-preis"));
+    cart.appendChild(cartItem);
+    updateSum();
   }
   
   function checkForm() {
-	var cartOptions = document.getElementById("cart").length;
-	var adress = document.getElementById("txtAdress").value;
-	if (cartOptions > 0 && adress != "")
-	{
-	  return true;
-	}
-	
-	return false;
+    var cartOptions = document.getElementById("cart").length;
+    var adress = document.getElementById("txtAdress").value;
+    if (cartOptions > 0 && adress != "")
+    {
+      return true;
+    }
+
+    return false;
   }
   
   function deleteAll() {
-	var cart = document.getElementById("cart");
-	while (cart.firstChild)
-	{
-		cart.removeChild(cart.firstChild);
-	}
-	
-	updateSum();
+    var cart = document.getElementById("cart");
+    while (cart.firstChild)
+    {
+      cart.removeChild(cart.firstChild);
+    }
+
+    updateSum();
   }
   
   function deleteSelected() {
-	var cart = document.getElementById("cart");
-	var cartItems = cart.options;
-	var i = cartItems.length;
-	while (i--) {
-		var current = cartItems[i];
-		if (current.selected) {
-			cart.removeChild(current);
-		}
-	}
-	
-	updateSum();
+    var cart = document.getElementById("cart");
+    var cartItems = cart.options;
+    var i = cartItems.length;
+    while (i--) {
+      var current = cartItems[i];
+      if (current.selected) {
+        cart.removeChild(current);
+      }
+    }
+
+    updateSum();
   }
   
   function mouseOut(sender) {
-	  sender.src = "images/pizza.png";
+    sender.src = "images/pizza.png";
   }
   
   function mouseOver(sender) {
-	  sender.src = "images/pizza-hover.png";
+    sender.src = "images/pizza-hover.png";
   }
   
   function updateSum() {
-	var cart = document.getElementById("cart");
-	var sum = 0.0;
-	for (i=0; i<cart.length; i++)
-	{
-		sum += parseFloat(cart.options[i].value);
-	}
+    var cart = document.getElementById("cart");
+    var sum = 0.0;
+    for (i=0; i<cart.length; i++)
+    {
+      sum += parseFloat(cart.options[i].value);
+    }
 	
-	var sumP = document.getElementById("sum");
-	sumP.innerHTML = sum + "€";
+    var sumP = document.getElementById("sum");
+    sumP.innerHTML = sum + "€";
   }
 </script>
 <section>
