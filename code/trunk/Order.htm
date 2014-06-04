@@ -27,6 +27,16 @@
     var adress = document.getElementById("txtAdress").value;
     if (cartOptions > 0 && adress != "")
     {
+	  var cart = document.getElementById("cart");
+      var cartItems = cart.options;
+      var i = cartItems.length;
+      while (i--) {
+        var current = cartItems[i];
+        if (!current.selected) {
+          current.selected = true;
+        }
+      }
+	  
       return true;
     }
 
@@ -74,7 +84,7 @@
     }
 	
     var sumP = document.getElementById("sum");
-    sumP.innerHTML = sum + "€";
+    sumP.innerHTML = sum.toFixed(2) + "€";
   }
 </script>
 <section>
@@ -97,6 +107,9 @@
         <input id="btnDelSel" type="button" name="deleteSelected" value="Auswahl löschen" />
         <input id="btnSubmit" type="submit" value="Bestellen" />
       </p>
+      <noscript>
+      <p class="center">Bitte Aktivieren Sie JavaScript!</p>
+      </noscript>
     </div>
   </form>
 </section>
