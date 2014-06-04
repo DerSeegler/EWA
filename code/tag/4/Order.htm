@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+<!-- öäß -->
+<title>Bestellung</title>
+</head>
+<body onLoad="init()">
+<script type="text/javascript">
+  function init() {
+    document.getElementById("btnDelAll").onclick = deleteAll;
+    document.getElementById("btnDelSel").onclick = deleteSelected;
+  }
+
+  function addItem(sender) {
+    var cart = document.getElementById("cart");
+    var cartItem = document.createElement("option");
+    cartItem.text = sender.getAttribute("data-name");
+    cartItem.value = parseFloat(sender.getAttribute("data-preis"));
+    cart.appendChild(cartItem);
+    updateSum();
+  }
+  
+  function checkForm() {
+    var cartOptions = document.getElementById("cart").length;
+    var adress = document.getElementById("txtAdress").value;
+    if (cartOptions > 0 && adress != "")
+    {
+	  var cart = document.getElementById("cart");
+      var cartItems = cart.options;
+      var i = cartItems.length;
+      while (i--) {
+        var current = cartItems[i];
+        if (!current.selected) {
+          current.selected = true;
+        }
+      }
+	  
+      return true;
+    }
+
+    return false;
+  }
+  
+  function deleteAll() {
+    var cart = document.getElementById("cart");
+    while (cart.firstChild)
+    {
+      cart.removeChild(cart.firstChild);
+    }
+
+    updateSum();
+  }
+  
+  function deleteSelected() {
+    var cart = document.getElementById("cart");
+    var cartItems = cart.options;
+    var i = cartItems.length;
+    while (i--) {
+      var current = cartItems[i];
+      if (current.selected) {
+        cart.removeChild(current);
+      }
+    }
+
+    updateSum();
+  }
+  
+  function mouseOut(sender) {
+    sender.src = "images/pizza.png";
+  }
+  
+  function mouseOver(sender) {
+    sender.src = "images/pizza-hover.png";
+  }
+  
+  function updateSum() {
+    var cart = document.getElementById("cart");
+    var sum = 0.0;
+    for (i=0; i<cart.length; i++)
+    {
+      sum += parseFloat(cart.options[i].value);
+    }
+	
+    var sumP = document.getElementById("sum");
+    sumP.innerHTML = sum.toFixed(2) + "€";
+  }
+</script>
+<section>
+  <h1>Bestellung</h1>
+  <div class="order-selection">
+    <p> <img id="p1" src="images/pizza.png" onClick="addItem(this)" onMouseOver="mouseOver(this)" onMouseOut="mouseOut(this)" data-name="Margherita" data-preis="4.00" /> Margherita 4,00€ </p>
+    <p> <img id="p2" src="images/pizza.png" onClick="addItem(this)" onMouseOver="mouseOver(this)" onMouseOut="mouseOut(this)" data-name="Salami" data-preis="4.50" /> Salami 4,50€ </p>
+    <p> <img id="p3" src="images/pizza.png" onClick="addItem(this)" onMouseOver="mouseOver(this)" onMouseOut="mouseOut(this)" data-name="Hawaii" data-preis="5.50" /> Hawaii 5,50€ </p>
+  </div>
+  <form id="orderForm" action="http://www.fbi.h-da.de/cgi-bin/Echo.pl" accept-charset="UTF-8" method="get" onsubmit="return checkForm()">
+    <div class="order-submission">
+      <p>
+        <select id="cart" name="cart[]" multiple size="10" class="fill-width">
+        </select>
+      </p>
+      <p id="sum"> 0€ </p>
+      <p class="center">
+        <input id="txtAdress" name="adress" type="text" size="20" class="fill-width resize-box" />
+        <input id="btnDelAll" type="button" name="deleteAll" value="Alles löschen" />
+        <input id="btnDelSel" type="button" name="deleteSelected" value="Auswahl löschen" />
+        <input id="btnSubmit" type="submit" value="Bestellen" />
+      </p>
+      <noscript>
+      <p class="center">Bitte Aktivieren Sie JavaScript!</p>
+      </noscript>
+    </div>
+  </form>
+</section>
+</body>
+</html>
