@@ -64,7 +64,6 @@ class OrderMenu        // to do: change name of class
      */
     protected function getViewData()
     {
-        // to do: fetch data for this view from the database
     }
     
     /**
@@ -76,9 +75,8 @@ class OrderMenu        // to do: change name of class
      *
      * @return none
      */
-    public function generateView($id = "", $class = "") 
+    public function generateView($id = "", $class = "", $angebote) 
     {
-        $this->getViewData();
         if ($id) {
             $id = "id=\"$id\"";
         }
@@ -86,11 +84,7 @@ class OrderMenu        // to do: change name of class
             $class = "class=\"$class\"";
         }
         echo "<div $id $class>\n";
-        echo <<<EOT
-            <p> <img id="p1" src="images/pizza.png" onClick="addItem(this)" onMouseOver="mouseOver(this)" onMouseOut="mouseOut(this)" data-name="Margherita" data-preis="4.00" /> Margherita 4,00€ </p>
-            <p> <img id="p2" src="images/pizza.png" onClick="addItem(this)" onMouseOver="mouseOver(this)" onMouseOut="mouseOut(this)" data-name="Salami" data-preis="4.50" /> Salami 4,50€ </p>
-            <p> <img id="p3" src="images/pizza.png" onClick="addItem(this)" onMouseOver="mouseOver(this)" onMouseOut="mouseOut(this)" data-name="Hawaii" data-preis="5.50" /> Hawaii 5,50€ </p>
-EOT;
+		$this->insert_angebote($angebote);
         echo "</div>\n";
     }
     
@@ -107,6 +101,17 @@ EOT;
     {
         // to do: call processData() for all members
     }
+	
+	private function insert_angebote($angebote)
+	{
+		$i = 0;
+		foreach ($angebote as $angebot) {
+			$name = $angebot["PizzaName"];
+			$preis = number_format($angebot["Preis"], 2);
+			echo "<p> <img id=\"$name\" src=\"images/pizza.png\" onClick=\"addItem(this)\" onMouseOver=\"mouseOver(this)\" onMouseOut=\"mouseOut(this)\" data-name=\"$name\" alt=\"Bild einer Pizza\" /> $name $preis € </p>";
+			$i++;
+		}
+	}
 }
 // Zend standard does not like closing php-tag!
 // PHP doesn't require the closing tag (it is assumed when the file ends). 

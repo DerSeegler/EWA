@@ -69,7 +69,19 @@ class Baker extends Page
      */
     protected function getViewData()
     {
-        // to do: fetch data for this view from the database
+        $pizzen = array();
+		$sql = "SELECT * FROM bestelltepizza WHERE Status < 3";
+		$recordset = $this->_database->query ($sql);
+		if (!$recordset)
+			throw new Exception("Fehler in Abfrage: ".$this->database->error);
+		// read selected records into result array
+		$i = 0;
+		while ($record = $recordset->fetch_assoc()) {
+			$pizzen[$i] = $record;
+			$i++;
+		}
+		$recordset->free();
+		return $pizzen;
     }
     
     /**
@@ -83,42 +95,25 @@ class Baker extends Page
      */
     protected function generateView() 
     {
-        $this->getViewData();
+        $pizzen = $this->getViewData();
         $this->generatePageHeader('Bäcker');
         echo <<<EOT
-        <body>
-            <section>
-                <h1>Bäcker</h1>
-                <form id="bakerForm" action="http://www.fbi.h-da.de/cgi-bin/Echo.pl" accept-charset="UTF-8" method="get">
-                    <table>
-                        <tr>
-                            <th></th>
-                            <th>bestellt</th>
-                            <th>im Ofen</th>
-                            <th>Fertig</th>
-                        </tr>
-                        <tr>
-                            <td>Margherita</td>
-                            <td><input type="radio" name="1" value="0" onclick="document.forms['bakerForm'].submit();" checked></td>
-                            <td><input type="radio" name="1" value="1" onclick="document.forms['bakerForm'].submit();"></td>
-                            <td><input type="radio" name="1" value="2" onclick="document.forms['bakerForm'].submit();"></td>
-                        </tr>
-                        <tr>
-                            <td>Margherita </td>
-                            <td><input type="radio" name="2" value="0" onclick="document.forms['bakerForm'].submit();"></td>
-                            <td><input type="radio" name="2" value="1" onclick="document.forms['bakerForm'].submit();" checked></td>
-                            <td><input type="radio" name="2" value="2" onclick="document.forms['bakerForm'].submit();"></td>
-                        </tr>
-                        <tr>
-                            <td>Hawaii</td>
-                            <td><input type="radio" name="3" value="0" onclick="document.forms['bakerForm'].submit();"></td>
-                            <td><input type="radio" name="3" value="1" onclick="document.forms['bakerForm'].submit();" checked></td>
-                            <td><input type="radio" name="3" value="2" onclick="document.forms['bakerForm'].submit();"></td>
-                        </tr>
-                    </table>
-                </form>
-            </section>
-        </body>
+<body>
+    <section>
+        <h1>Bäcker</h1>
+		<table>
+			<tr>
+				<th></th>
+				<th>bestellt</th>
+				<th>im Ofen</th>
+				<th>Fertig</th>
+			</tr>
+EOT;
+			$this->insert_rows($pizzen);
+			echo <<<EOT
+		</table>
+    </section>
+</body>
 EOT;
         $this->generatePageFooter();
     }
@@ -135,7 +130,12 @@ EOT;
     protected function processReceivedData() 
     {
         parent::processReceivedData();
-        // to do: call processReceivedData() for all members
+        if (isset($_POST["id"]) && isset($_POST["status"])) {
+			$id = $_POST['id'];
+			$status = $_POST['status'];
+			$sql = "UPDATE bestelltepizza SET `Status` = $status WHERE `PizzaId` = $id";
+			$this->_database->query($sql);
+		}
     }
 
     /**
@@ -162,6 +162,35 @@ EOT;
             echo $e->getMessage();
         }
     }
+	
+	private function insert_rows($pizzen)
+	{
+		$i = 0;
+		foreach ($pizzen as $pizza) {
+			$id = $pizza["PizzaID"];
+			$name = $pizza["fPizzaName"];
+			$status = $pizza["Status"];
+			echo "<form id=\"bakerForm$i\" action=\"Baker.php\" accept-charset=\"UTF-8\" method=\"post\">\n";
+			echo "<tr>\n";
+            echo "      <td>$name</td>\n";
+			echo "      <td><input type=\"hidden\" name=\"id\" value=\"$id\">\n";
+            echo "      <input type=\"radio\" name=\"status\" value=\"0\" onclick=\"document.forms['bakerForm$i'].submit();\"";
+			if($status == 0)
+				echo " checked ";
+			echo "></td>\n";
+            echo "      <td><input type=\"radio\" name=\"status\" value=\"1\" onclick=\"document.forms['bakerForm$i'].submit();\"";
+			if($status == 1)
+				echo " checked ";
+			echo "></td>\n";
+            echo "      <td><input type=\"radio\" name=\"status\" value=\"2\" onclick=\"document.forms['bakerForm$i'].submit();\"";
+			if($status == 2)
+				echo " checked ";
+			echo "></td>\n";
+            echo "</tr>\n";
+			echo "</form>\n";
+			$i++;
+		}
+	}
 }
 
 // This call is starting the creation of the page. 

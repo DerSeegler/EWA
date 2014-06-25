@@ -87,20 +87,20 @@ class OrderCart        // to do: change name of class
         }
         echo "<div $id $class>\n";
         echo <<<EOT
-            <p>
-                <select id="cart" name="cart[]" multiple size="10" class="fill-width">
-                </select>
-            </p>
-            <p id="sum"> 0€ </p>
-            <p class="center">
-                <input id="txtAdress" name="adress" type="text" size="20" class="fill-width resize-box" />
-                <input id="btnDelAll" type="button" name="deleteAll" value="Alles löschen" />
-                <input id="btnDelSel" type="button" name="deleteSelected" value="Auswahl löschen" />
-                <input id="btnSubmit" type="submit" value="Bestellen" />
-            </p>
-            <noscript>
-                <p class="center">Bitte Aktivieren Sie JavaScript!</p>
-            </noscript>
+        <p>
+            <select id="cart" name="cart[]" multiple size="10" class="fill-width">
+            </select>
+        </p>
+        <p id="sum"> 0€ </p>
+        <p class="center">
+            <input id="txtAdress" name="adress" type="text" size="20" maxlength="255" class="fill-width resize-box" />
+            <input id="btnDelAll" type="button" name="deleteAll" value="Alles löschen" />
+            <input id="btnDelSel" type="button" name="deleteSelected" value="Auswahl löschen" />
+            <input id="btnSubmit" type="submit" value="Bestellen" />
+        </p>
+        <noscript>
+            <p class="center">Bitte Aktivieren Sie JavaScript!</p>
+        </noscript>
 EOT;
         echo "</div>\n";
     }

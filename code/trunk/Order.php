@@ -71,7 +71,19 @@ class Order extends Page
      */
     protected function getViewData()
     {
-        // to do: fetch data for this view from the database
+        $angebote = array();
+		$sql = "SELECT * FROM angebot";
+		$recordset = $this->_database->query ($sql);
+		if (!$recordset)
+			throw new Exception("Fehler in Abfrage: ".$this->database->error);
+		// read selected records into result array
+		$i = 0;
+		while ($record = $recordset->fetch_assoc()) {
+			$angebote[$i] = $record;
+			$i++;
+		}
+		$recordset->free();
+		return $angebote;
     }
     
     /**
@@ -85,103 +97,113 @@ class Order extends Page
      */
     protected function generateView() 
     {
-        $this->getViewData();
+        $angebote = $this->getViewData();
         $this->generatePageHeader('Bestellung');
         echo <<<EOT
-        <script type="text/javascript">
-            function init() {
-                document.getElementById("btnDelAll").onclick = deleteAll;
-                document.getElementById("btnDelSel").onclick = deleteSelected;
-            }
+<body>
+<script type="text/javascript">
+    function init() {
+        document.getElementById("btnDelAll").onclick = deleteAll;
+        document.getElementById("btnDelSel").onclick = deleteSelected;
+    }
 
-            function addItem(sender) {
-                var cart = document.getElementById("cart");
-                var cartItem = document.createElement("option");
-                cartItem.text = sender.getAttribute("data-name");
-                cartItem.value = parseFloat(sender.getAttribute("data-preis"));
-                cart.appendChild(cartItem);
-                updateSum();
-            }
-          
-            function checkForm() {
-                var cartOptions = document.getElementById("cart").length;
-                var adress = document.getElementById("txtAdress").value;
-                if (cartOptions > 0 && adress != "")
-                {
-                    var cart = document.getElementById("cart");
-                    var cartItems = cart.options;
-                    var i = cartItems.length;
-                    while (i--) {
-                        var current = cartItems[i];
-                        if (!current.selected) {
-                            current.selected = true;
-                        }
-                    }
-              
-                    return true;
+    function addItem(sender) {
+		this.init();
+        var cart = document.getElementById("cart");
+        var cartItem = document.createElement("option");
+        cartItem.text = sender.getAttribute("data-name");
+        cart.appendChild(cartItem);
+        updateSum();
+    }
+  
+    function checkForm() {
+        var cartOptions = document.getElementById("cart").length;
+        var adress = document.getElementById("txtAdress").value;
+        if (cartOptions > 0 && adress != "")
+        {
+            var cart = document.getElementById("cart");
+            var cartItems = cart.options;
+            var i = cartItems.length;
+            while (i--) {
+                var current = cartItems[i];
+                if (!current.selected) {
+                    current.selected = true;
                 }
+            }
+      
+            return true;
+        }
 
-                return false;
-            }
-          
-            function deleteAll() {
-                var cart = document.getElementById("cart");
-                while (cart.firstChild)
-                {
-                    cart.removeChild(cart.firstChild);
-                }
+        return false;
+    }
+  
+    function deleteAll() {
+        var cart = document.getElementById("cart");
+        while (cart.firstChild)
+        {
+            cart.removeChild(cart.firstChild);
+        }
 
-                updateSum();
+        updateSum();
+    }
+  
+    function deleteSelected() {
+        var cart = document.getElementById("cart");
+        var cartItems = cart.options;
+        var i = cartItems.length;
+        while (i--) {
+            var current = cartItems[i];
+            if (current.selected) {
+                cart.removeChild(current);
             }
-          
-            function deleteSelected() {
-                var cart = document.getElementById("cart");
-                var cartItems = cart.options;
-                var i = cartItems.length;
-                while (i--) {
-                    var current = cartItems[i];
-                    if (current.selected) {
-                        cart.removeChild(current);
-                    }
-                }
+        }
 
-                updateSum();
-            }
-          
-            function mouseOut(sender) {
-                sender.src = "images/pizza.png";
-            }
-          
-            function mouseOver(sender) {
-                sender.src = "images/pizza-hover.png";
-            }
-          
-            function updateSum() {
-                var cart = document.getElementById("cart");
-                var sum = 0.0;
-                for (i=0; i<cart.length; i++)
-                {
-                    sum += parseFloat(cart.options[i].value);
-                }
-            
-                var sumP = document.getElementById("sum");
-                sumP.innerHTML = sum.toFixed(2) + "€";
-            }
-        </script>
-        <section>
-            <h1>Bestellung</h1>
+        updateSum();
+    }
+  
+    function mouseOut(sender) {
+        sender.src = "images/pizza.png";
+    }
+  
+    function mouseOver(sender) {
+        sender.src = "images/pizza-hover.png";
+    }
+  
+    function updateSum() {
+		var angebote = {};
+		
+EOT;
+		foreach ($angebote as $angebot) {
+			$name = $angebot["PizzaName"];
+			$preis = number_format($angebot["Preis"], 2);
+			echo "angebote[\"$name\"] = $preis;\n";	
+		}
+		echo <<<EOT
+        var cart = document.getElementById("cart");
+        var sum = 0.0;
+        for (i=0; i<cart.length; i++)
+        {
+            sum += parseFloat(angebote[cart.options[i].text]);
+        }
+    
+        var sumP = document.getElementById("sum");
+        sumP.innerHTML = sum.toFixed(2) + "€";
+    }
+</script>
+<section>
+    <h1>Bestellung</h1>
 EOT;
             $blockMenu = new OrderMenu($this->_database);
-            $blockMenu->generateView('order-selection', 'order-selection');
+            $blockMenu->generateView('order-selection', 'order-selection', $angebote);
             echo <<<EOT
-            <form id="orderForm" action="http://www.fbi.h-da.de/cgi-bin/Echo.pl" accept-charset="UTF-8" method="post" onsubmit="return checkForm()">
+    <form id="orderForm" action="customer.php" accept-charset="UTF-8" method="post" onsubmit="return checkForm()">
 EOT;
                 $blockCart = new OrderCart($this->_database);
                 $blockCart->generateView('order-submission', 'order-submission');
                 echo <<<EOT
-            </form>
-        </section>
-        </body>
+    </form>
+</section>
+</body>
 EOT;
         $this->generatePageFooter();
     }

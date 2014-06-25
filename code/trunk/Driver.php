@@ -60,6 +60,8 @@ class Driver extends Page
     {
         parent::__destruct();
     }
+	
+	protected $angebot = null;
 
     /**
      * Fetch all data that is necessary for later output.
@@ -69,7 +71,60 @@ class Driver extends Page
      */
     protected function getViewData()
     {
-        // to do: fetch data for this view from the database
+		$this->angebot = array();
+		$sql = "SELECT * FROM angebot";
+		$recordset = $this->_database->query ($sql);
+		if (!$recordset)
+			throw new Exception("Fehler in Abfrage: ".$this->database->error);
+		// read selected records into result array
+		while ($record = $recordset->fetch_assoc()) {
+			$this->angebot[$record["PizzaName"]] = $record["Preis"];
+		}
+		$recordset->free();
+		
+		$data = array();
+        $bestellungen = array();
+		$sql = "SELECT * FROM bestellung";
+		$recordset = $this->_database->query ($sql);
+		if (!$recordset)
+			throw new Exception("Fehler in Abfrage: ".$this->database->error);
+		// read selected records into result array
+		$i = 0;
+		while ($record = $recordset->fetch_assoc()) {
+			$bestellungen[$i] = $record;
+			$i++;
+		}
+		$recordset->free();
+		
+		$j = 0;
+		foreach($bestellungen as $bestellung) {
+			$pizzen = array();
+			$id = $bestellung["BestellungID"];
+			$sql = "SELECT * FROM bestelltepizza WHERE fBestellungID = $id";
+			$recordset = $this->_database->query ($sql);
+			if (!$recordset)
+				throw new Exception("Fehler in Abfrage: ".$this->database->error);
+			$i = 0;
+			$finished = true;
+			while ($record = $recordset->fetch_assoc()) {
+				$pizzen[$i] = $record;
+				if($record["Status"]<2 || $record["Status"]>3)
+					$finished = false;
+				$i++;
+			}
+			
+			if($finished) {
+				$ganzeBestellung = array();
+				$ganzeBestellung["bestellung"] = $bestellung;
+				$ganzeBestellung["pizzen"] = $pizzen;
+				$data[$j] = $ganzeBestellung;
+				$j++;
+			}
+			
+			$recordset->free();
+		}
+		
+		return $data;
     }
     
     /**
@@ -83,50 +138,17 @@ class Driver extends Page
      */
     protected function generateView() 
     {
-        $this->getViewData();
+        $data = $this->getViewData();
         $this->generatePageHeader('Fahrer');
         echo <<<EOT
-        <body>
-            <section>
-                <h1>Fahrer</h1>
-                <form id="driverForm" action="http://www.fbi.h-da.de/cgi-bin/Echo.pl" accept-charset="UTF-8" method="get">
-                    <article class="order-delivery-box">
-                        <h2>Müller, Freßgasse 11, 65000 Frankfurt</h2>
-                        <p> Tonno, Calzone, Margherita, Hawaii, Tonno </p>
-                        <p> Preis: 13,00€ </p>
-                        <table>
-                            <tr>
-                                <th>gebacken</th>
-                                <th>unterwegs</th>
-                                <th>ausgeliefert</th>
-                            </tr>
-                            <tr>
-                                <td><input type="radio" name="1" value="2" onclick="document.forms['driverForm'].submit();"></td>
-                                <td><input type="radio" name="1" value="3" onclick="document.forms['driverForm'].submit();" checked></td>
-                                <td><input type="radio" name="1" value="4" onclick="document.forms['driverForm'].submit();"></td>
-                            </tr>
-                        </table>
-                    </article>
-                    <article class="order-delivery-box">
-                        <h2>Maier, Hauptstr. 5</h2>
-                        <p> Tonno, Tonno, Margherita </p>
-                        <p> Preis: 10,50€ </p>
-                        <table>
-                            <tr>
-                                <th>gebacken</th>
-                                <th>unterwegs</th>
-                                <th>ausgeliefert</th>
-                            </tr>
-                            <tr>
-                                <td><input type="radio" name="2" value="2" onclick="document.forms['driverForm'].submit();"></td>
-                                <td><input type="radio" name="2" value="3" onclick="document.forms['driverForm'].submit();" checked></td>
-                                <td><input type="radio" name="2" value="4" onclick="document.forms['driverForm'].submit();"></td>
-                            </tr>
-                        </table>
-                    </article>
-                </form>
-            </section>
-        </body>
+<body>
+    <section>
+        <h1>Fahrer</h1>
+EOT;
+		$this->insert_bestellungen($data);
+		echo <<<EOT
+    </section>
+</body>
 EOT;
         $this->generatePageFooter();
     }
@@ -143,7 +165,12 @@ EOT;
     protected function processReceivedData() 
     {
         parent::processReceivedData();
-        // to do: call processReceivedData() for all members
+        if (isset($_POST["id"]) && isset($_POST["status"])) {
+			$id = $_POST['id'];
+			$status = $_POST['status'];
+			$sql = "UPDATE bestelltepizza SET `Status` = $status WHERE `fBestellungID` = $id";
+			$this->_database->query($sql);
+		}
     }
 
     /**
@@ -170,6 +197,62 @@ EOT;
             echo $e->getMessage();
         }
     }
+	
+	private function insert_bestellungen($data)
+	{
+		$i = 0;
+		foreach ($data as $ganzeBestellung) {
+			$bestellung = $ganzeBestellung["bestellung"];
+			$pizzen = $ganzeBestellung["pizzen"];
+			$bestellungId = $bestellung["BestellungID"];
+			$adresse = $bestellung["Adresse"];
+			echo "<article class=\"order-delivery-box\">\n";
+            echo "    <h2>$adresse</h2>\n";
+            echo "    <p> ";
+			$first = true;
+			$status = 0;
+			$preis = 0;
+			foreach ($pizzen as $pizza) {
+				if(!$first) {
+					echo ", ";
+				}
+				else {
+					$first = false;
+					$status = $pizza["Status"];
+				}
+				echo $pizza["fPizzaName"];
+				$preis = $preis + $this->angebot[$pizza["fPizzaName"]];
+			}
+			$preis = number_format($preis, 2);
+			echo " </p>\n";
+            echo "    <p> Preis: $preis € </p>\n";
+            echo <<<EOT
+			    <table>
+                    <tr>
+                        <th>gebacken</th>
+                        <th>unterwegs</th>
+                        <th>ausgeliefert</th>
+                    </tr>
+EOT;
+			echo "	<form id=\"driverForm$i\" action=\"Driver.php\" accept-charset=\"UTF-8\" method=\"post\">\n";
+            echo "        <tr>\n";
+            echo "            <td><input type=\"hidden\" name=\"id\" value=\"$bestellungId\">\n<input type=\"radio\" name=\"status\" value=\"2\" onclick=\"document.forms['driverForm$i'].submit();\"";
+			if($status == 2)
+				echo " checked ";
+			echo "></td>\n";
+            echo "            <td><input type=\"radio\" name=\"status\" value=\"3\" onclick=\"document.forms['driverForm$i'].submit();\"";
+			if($status == 3)
+				echo " checked ";
+			echo "></td>\n";
+            echo "            <td><input type=\"radio\" name=\"status\" value=\"4\" onclick=\"document.forms['driverForm$i'].submit();\"></td>\n";
+            echo "        </tr>";
+			echo "    </form>";
+            echo "    </table>";
+            echo "</article>";
+			
+			$i++;
+		}
+	}
 }
 
 // This call is starting the creation of the page. 

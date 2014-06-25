@@ -49,7 +49,8 @@ abstract class Page
      */
     protected function __construct() 
     {
-        $this->_database = 'localhost';
+        $this->_database = new MySQLi("127.0.0.1", "root", "dubidu2000", "ewa");
+		error_reporting(E_ALL);
     }
     
     /**
@@ -78,14 +79,15 @@ abstract class Page
         header("Content-type: text/html; charset=UTF-8");
         
 		echo <<<EOT
-        <!DOCTYPE html>
-        <html lang="de">
-        <head>
-        <meta charset="UTF-8" />
-        <link rel="stylesheet" type="text/css" href="styles.css" />
-        <!-- öäß -->
-        <title>{$headline}</title>
-        </head>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+<!-- öäß -->
+<title>{$headline}</title>
+</head>
+
 EOT;
     }
 
@@ -97,7 +99,8 @@ EOT;
     protected function generatePageFooter() 
     {
 	    echo <<<EOT
-        </html>
+        
+</html>
 EOT;
     }
 

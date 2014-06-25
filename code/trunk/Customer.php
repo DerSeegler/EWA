@@ -69,7 +69,23 @@ class Customer extends Page
      */
     protected function getViewData()
     {
-        // to do: fetch data for this view from the database
+        $pizzen = array();
+		session_start();
+		if (isset($_SESSION['bestellid'])) {
+			$bestellid = $_SESSION["bestellid"];
+			$sql = "SELECT * FROM bestelltepizza WHERE fBestellungID = $bestellid";
+			$recordset = $this->_database->query ($sql);
+			if (!$recordset)
+				throw new Exception("Fehler in Abfrage: ".$this->database->error);
+			// read selected records into result array
+			$i = 0;
+			while ($record = $recordset->fetch_assoc()) {
+				$pizzen[$i] = $record;
+				$i++;
+			}
+			$recordset->free();
+		}
+		return $pizzen;
     }
     
     /**
@@ -83,55 +99,36 @@ class Customer extends Page
      */
     protected function generateView() 
     {
-        $this->getViewData();
+        $pizzen = $this->getViewData();
         $this->generatePageHeader('Kunde');
         echo <<<EOT
-        <body>
-            <section>
-                <article>
-                    <h1>Kunde</h1>
-                    <form id="customerForm">
-                        <table>
-                            <tr>
-                                <th></th>
-                                <th>bestellt</th>
-                                <th>im Ofen</th>
-                                <th>Fertig</th>
-                                <th>unterwegs</th>
-                            </tr>
-                            <tr>
-                                <td>Margherita</td>
-                                <td><input type="radio" name="1" value="0" disabled checked></td>
-                                <td><input type="radio" name="1" value="1" disabled></td>
-                                <td><input type="radio" name="1" value="2" disabled></td>
-                                <td><input type="radio" name="1" value="3" disabled></td>
-                            </tr>
-                            <tr>
-                                <td>Margherita </td>
-                                <td><input type="radio" name="2"  value="0" disabled></td>
-                                <td><input type="radio" name="2" value="1" disabled checked></td>
-                                <td><input type="radio" name="2" value="2" disabled></td>
-                                <td><input type="radio" name="3" value="3" disabled></td>
-                            </tr>
-                            <tr>
-                                <td>Hawai</td>
-                                <td><input type="radio" name="3" value="0" disabled></td>
-                                <td><input type="radio" name="3" value="1" disabled checked></td>
-                                <td><input type="radio" name="3" value="2" disabled></td>
-                                <td><input type="radio" name="3" value="3" disabled></td>
-                            </tr>
-                        </table>
-                    </form>
-                </article>
-                <article>
-                    <ul>
-                        <li>
-                            <div class="big-button"><a href="Order.htm">Neue Bestellung</a></div>
-                        </li>
-                    </ul>
-                </article>
-            </section>
-        </body>
+<body>
+    <section>
+        <article>
+            <h1>Kunde</h1>
+                <table>
+                    <tr>
+                        <th></th>
+                        <th>bestellt</th>
+                        <th>im Ofen</th>
+                        <th>Fertig</th>
+                        <th>unterwegs</th>
+                    </tr>
+					
+EOT;
+					$this->insert_rows($pizzen);
+					echo <<<EOT
+                </table>
+        </article>
+        <article>
+            <ul>
+                <li>
+                    <div class="big-button"><a href="Order.php">Neue Bestellung</a></div>
+                </li>
+            </ul>
+        </article>
+    </section>
+</body>
 EOT;
         $this->generatePageFooter();
     }
@@ -148,7 +145,20 @@ EOT;
     protected function processReceivedData() 
     {
         parent::processReceivedData();
-        // to do: call processReceivedData() for all members
+		if (isset($_POST["cart"]) && isset($_POST["adress"])) {
+			$cart = $_POST['cart'];
+			$adress = $this->_database->real_escape_string($_POST['adress']);
+			$sql = "INSERT INTO bestellung (`Adresse`) VALUES (\"$adress\")";
+			$this->_database->query($sql);
+			$bestellid = $this->_database->insert_id;
+			foreach($cart as $pizza) {
+					$sql = "INSERT INTO bestelltepizza (`fBestellungID`, `fPizzaName`, `Status`) VALUES (\"$bestellid\", \"$pizza\", 0)";
+					$this->_database->query($sql);
+			}
+			
+			session_start();
+			$_SESSION["bestellid"] = $bestellid;
+		}
     }
 
     /**
@@ -175,6 +185,39 @@ EOT;
             echo $e->getMessage();
         }
     }
+	
+	private function insert_rows($pizzen)
+	{
+		$i = 0;
+		foreach ($pizzen as $pizza) {
+			$id = $pizza["PizzaID"];
+			$name = $pizza["fPizzaName"];
+			$status = $pizza["Status"];
+			echo "<form id=\"customerForm\">\n";
+			echo "<tr>\n";
+            echo "      <td>$name</td>\n";
+			echo "      <td><input type=\"hidden\" name=\"$name\" value=\"$id\">\n";
+            echo "      <input type=\"radio\" name=\"$name\" value=\"0\" disabled";
+			if($status == 0)
+				echo " checked ";
+			echo "></td>\n";
+            echo "      <td><input type=\"radio\" name=\"$name\" value=\"1\" disabled";
+			if($status == 1)
+				echo " checked ";
+			echo "></td>\n";
+            echo "      <td><input type=\"radio\" name=\"$name\" value=\"2\" disabled";
+			if($status == 2)
+				echo " checked ";
+			echo "></td>\n";
+            echo "      <td><input type=\"radio\" name=\"$name\" value=\"3\" disabled";
+			if($status == 3)
+				echo " checked ";
+			echo "></td>\n";
+            echo "</tr>\n";
+			echo "</form>\n";
+			$i++;
+		}
+	}
 }
 
 // This call is starting the creation of the page. 
