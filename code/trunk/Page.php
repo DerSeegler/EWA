@@ -50,7 +50,6 @@ abstract class Page
     protected function __construct() 
     {
         $this->_database = new MySQLi("127.0.0.1", "root", "dubidu2000", "ewa");
-		error_reporting(E_ALL);
     }
     
     /**

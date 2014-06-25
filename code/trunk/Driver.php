@@ -206,6 +206,7 @@ EOT;
 			$pizzen = $ganzeBestellung["pizzen"];
 			$bestellungId = $bestellung["BestellungID"];
 			$adresse = $bestellung["Adresse"];
+			$adresse = htmlspecialchars($adresse);
 			echo "<article class=\"order-delivery-box\">\n";
             echo "    <h2>$adresse</h2>\n";
             echo "    <p> ";

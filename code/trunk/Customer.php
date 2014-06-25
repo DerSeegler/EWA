@@ -70,7 +70,6 @@ class Customer extends Page
     protected function getViewData()
     {
         $pizzen = array();
-		session_start();
 		if (isset($_SESSION['bestellid'])) {
 			$bestellid = $_SESSION["bestellid"];
 			$sql = "SELECT * FROM bestelltepizza WHERE fBestellungID = $bestellid";
@@ -145,6 +144,7 @@ EOT;
     protected function processReceivedData() 
     {
         parent::processReceivedData();
+		session_start();
 		if (isset($_POST["cart"]) && isset($_POST["adress"])) {
 			$cart = $_POST['cart'];
 			$adress = $this->_database->real_escape_string($_POST['adress']);
@@ -156,7 +156,6 @@ EOT;
 					$this->_database->query($sql);
 			}
 			
-			session_start();
 			$_SESSION["bestellid"] = $bestellid;
 		}
     }
