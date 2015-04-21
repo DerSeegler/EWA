@@ -82,6 +82,21 @@ abstract class Page
 <html lang="de">
 <head>
 <meta charset="UTF-8" />
+
+EOT;
+        if ($headline == "Kunde") {
+            echo "<meta http-equiv=\"refresh\" content=\"5\">\n";
+        }
+		
+		if ($headline == "Bäcker") {
+			echo "<meta http-equiv=\"refresh\" content=\"5; URL=Baker.php\">\n";
+		}
+		
+		if ($headline == "Fahrer") {
+			echo "<meta http-equiv=\"refresh\" content=\"5; URL=Driver.php\">\n";
+		}
+		
+        echo <<<EOT
 <link rel="stylesheet" type="text/css" href="styles.css" />
 <!-- öäß -->
 <title>{$headline}</title>

@@ -101,6 +101,7 @@ class Baker extends Page
 <body>
     <section>
         <h1>Bäcker</h1>
+		<form id="bakerForm" accept-charset="UTF-8" method="post">
 		<table>
 			<tr>
 				<th></th>
@@ -112,6 +113,7 @@ EOT;
 			$this->insert_rows($pizzen);
 			echo <<<EOT
 		</table>
+		</form>
     </section>
 </body>
 EOT;
@@ -130,12 +132,11 @@ EOT;
     protected function processReceivedData() 
     {
         parent::processReceivedData();
-        if (isset($_POST["id"]) && isset($_POST["status"])) {
-			$id = $_POST['id'];
-			$status = $_POST['status'];
+        if (isset($_GET["id"]) && isset($_GET["status"])) {
+			$id = $_GET['id'];
+			$status = $_GET["status"];
 			$sql = "UPDATE bestelltepizza SET `Status` = $status WHERE `PizzaId` = $id";
-			$this->_database->query($sql);
-		}
+			$this->_database->query($sql);		}
     }
 
     /**
@@ -170,24 +171,23 @@ EOT;
 			$id = $pizza["PizzaID"];
 			$name = $pizza["fPizzaName"];
 			$status = $pizza["Status"];
-			echo "<form id=\"bakerForm$i\" action=\"Baker.php\" accept-charset=\"UTF-8\" method=\"post\">\n";
+			//echo "<form id=\"bakerForm$i\" action=\"Baker.php\" accept-charset=\"UTF-8\" method=\"post\">\n";
 			echo "<tr>\n";
             echo "      <td>$name</td>\n";
-			echo "      <td><input type=\"hidden\" name=\"id\" value=\"$id\">\n";
-            echo "      <input type=\"radio\" name=\"status\" value=\"0\" onclick=\"document.forms['bakerForm$i'].submit();\"";
+            echo "      <td><input type=\"radio\" name=\"status$id\" value=\"0\" onclick=\"window.location.href='Baker.php?id=$id&amp;status=0';\"";
 			if($status == 0)
 				echo " checked ";
 			echo "></td>\n";
-            echo "      <td><input type=\"radio\" name=\"status\" value=\"1\" onclick=\"document.forms['bakerForm$i'].submit();\"";
+            echo "      <td><input type=\"radio\" name=\"status$id\" value=\"1\" onclick=\"window.location.href='Baker.php?id=$id&amp;status=1';\"";
 			if($status == 1)
 				echo " checked ";
 			echo "></td>\n";
-            echo "      <td><input type=\"radio\" name=\"status\" value=\"2\" onclick=\"document.forms['bakerForm$i'].submit();\"";
+            echo "      <td><input type=\"radio\" name=\"status$id\" value=\"2\" onclick=\"window.location.href='Baker.php?id=$id&amp;status=2';\"";
 			if($status == 2)
 				echo " checked ";
 			echo "></td>\n";
             echo "</tr>\n";
-			echo "</form>\n";
+			//echo "</form>\n";
 			$i++;
 		}
 	}

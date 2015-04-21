@@ -228,6 +228,7 @@ EOT;
 			echo " </p>\n";
             echo "    <p> Preis: $preis € </p>\n";
             echo <<<EOT
+			<form id="driverForm$i" action="Driver.php" accept-charset="UTF-8" method="post">
 			    <table>
                     <tr>
                         <th>gebacken</th>
@@ -235,7 +236,6 @@ EOT;
                         <th>ausgeliefert</th>
                     </tr>
 EOT;
-			echo "	<form id=\"driverForm$i\" action=\"Driver.php\" accept-charset=\"UTF-8\" method=\"post\">\n";
             echo "        <tr>\n";
             echo "            <td><input type=\"hidden\" name=\"id\" value=\"$bestellungId\">\n<input type=\"radio\" name=\"status\" value=\"2\" onclick=\"document.forms['driverForm$i'].submit();\"";
 			if($status == 2)
@@ -247,8 +247,8 @@ EOT;
 			echo "></td>\n";
             echo "            <td><input type=\"radio\" name=\"status\" value=\"4\" onclick=\"document.forms['driverForm$i'].submit();\"></td>\n";
             echo "        </tr>";
-			echo "    </form>";
             echo "    </table>";
+			echo "	  </form>";
             echo "</article>";
 			
 			$i++;

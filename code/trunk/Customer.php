@@ -105,6 +105,7 @@ class Customer extends Page
     <section>
         <article>
             <h1>Kunde</h1>
+				<form id="customerForm">
                 <table>
                     <tr>
                         <th></th>
@@ -118,6 +119,7 @@ EOT;
 					$this->insert_rows($pizzen);
 					echo <<<EOT
                 </table>
+				</form>
         </article>
         <article>
             <ul>
@@ -157,6 +159,8 @@ EOT;
 			}
 			
 			$_SESSION["bestellid"] = $bestellid;
+			
+			header('Location: Customer.php');
 		}
     }
 
@@ -192,28 +196,27 @@ EOT;
 			$id = $pizza["PizzaID"];
 			$name = $pizza["fPizzaName"];
 			$status = $pizza["Status"];
-			echo "<form id=\"customerForm\">\n";
+			//echo "<form id=\"customerForm$i\">\n";
 			echo "<tr>\n";
             echo "      <td>$name</td>\n";
 			echo "      <td><input type=\"hidden\" name=\"$name\" value=\"$id\">\n";
-            echo "      <input type=\"radio\" name=\"$name\" value=\"0\" disabled";
+            echo "      <input type=\"radio\" name=\"$name$i\" value=\"0\" disabled";
 			if($status == 0)
 				echo " checked ";
 			echo "></td>\n";
-            echo "      <td><input type=\"radio\" name=\"$name\" value=\"1\" disabled";
+            echo "      <td><input type=\"radio\" name=\"$name$i\" value=\"1\" disabled";
 			if($status == 1)
 				echo " checked ";
 			echo "></td>\n";
-            echo "      <td><input type=\"radio\" name=\"$name\" value=\"2\" disabled";
+            echo "      <td><input type=\"radio\" name=\"$name$i\" value=\"2\" disabled";
 			if($status == 2)
 				echo " checked ";
 			echo "></td>\n";
-            echo "      <td><input type=\"radio\" name=\"$name\" value=\"3\" disabled";
+            echo "      <td><input type=\"radio\" name=\"$name$i\" value=\"3\" disabled";
 			if($status == 3)
 				echo " checked ";
 			echo "></td>\n";
             echo "</tr>\n";
-			echo "</form>\n";
 			$i++;
 		}
 	}
